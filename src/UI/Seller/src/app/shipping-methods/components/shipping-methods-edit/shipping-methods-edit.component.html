@@ -1,0 +1,100 @@
+<div class="container-fluid">
+  <form *ngIf="resourceForm" [formGroup]="resourceForm">
+    <div class="form-group">
+      <span class="required-field">* required fields</span>
+      <div class="card bg-white shadow-sm p-4 mt-3">
+        <h6 class="font-weight-medium" translate>
+          ADMIN.SHIPPING_METHOD_EDIT.DETAILS
+        </h6>
+        <div class="form-group">
+          <label for="id">ID<span class="required-field">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="id"
+            maxlength="100"
+            aria-describedby="ID"
+            formControlName="ID"
+            (input)="updateResourceFromEvent($event, 'id')"
+            placeholder="Enter ID"
+          />
+        </div>
+        <div class="form-group">
+          <label for="Name">Name<span class="required-field">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="Name"
+            maxlength="100"
+            aria-describedby="Name"
+            formControlName="Name"
+            (input)="updateResourceFromEvent($event, 'Name')"
+            placeholder="Enter Name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="Description">Description</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Description"
+            maxlength="100"
+            aria-describedby="Description"
+            formControlName="Description"
+            (input)="updateResourceFromEvent($event, 'Description')"
+            placeholder="Enter Description"
+          />
+        </div>
+        <div class="form-group">
+          <p class="mb-1">Active</p>
+          <label class="switch mb-0" for="Active">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="Active"
+              showErrors
+              [resourceForm]="resourceForm"
+              aria-describedby="Active"
+              formControlName="Active"
+              (change)="updateResourceFromEvent($event, 'Active')"
+            />
+            <span class="slider round cursor-pointer"></span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="EstimatedTransitDays">Estimated Transit Days</label>
+          <input
+            type="number"
+            class="form-control"
+            id="EstimatedTransitDays"
+            aria-describedby="EstimatedTransitDays"
+            formControlName="EstimatedTransitDays"
+            (input)="updateResourceFromEvent($event, 'EstimatedTransitDays')"
+            placeholder="Enter Estimated Transit Days"
+          />
+        </div>
+        <div class="form-group">
+          <label for="Currency">Currency<span class="required-field">*</span></label>
+          <select class="form-control" id="Currency" formControlName="Currency"
+              (change)="updateResourceFromEvent($event, 'Currency')">
+              <option *ngFor="let currency of availableCurrencies" [value]="currency.Currency">
+                <img [src]="currency.Icon" /> {{ currency.Name }}
+              </option>
+            </select>
+        </div>
+      </div>
+      <div class="card bg-white shadow-sm p-4 mt-3">
+        <h6 class="font-weight-medium" translate>
+          ADMIN.SHIPPING_METHOD_EDIT.SHIPPING_COSTS
+        </h6>
+        <shipping-cost-editor
+          [shippingMethodForm]="resourceForm"
+          [shippingMethod]="shippingMethod"
+          [currency]="selectedCurrency"
+          (shippingCostsUpdated)="updateShippingCosts($event)"
+        >
+        </shipping-cost-editor>
+      </div>
+    </div>
+  </form>
+</div>

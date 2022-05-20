@@ -212,6 +212,8 @@
       "SALES_ORDERS": "Sales Orders",
       "SELLER_USERS": "Seller Users",
       "SHIPPED_ORDERS": "Shipped Orders",
+      "SHIPPING_METHOD": "Shipping Method",
+      "SHIPPING_METHODS": "Shipping Methods",
       "STOREFRONTS": "Storefronts",
       "SUBMIT_CASE": "Submit a Case",
       "SUPPLIERS": "Suppliers",
@@ -611,6 +613,14 @@
       "THE_FOLLOWING_REQUESTS": "The following requests will be denied and the buyer will be automatically notified.",
       "TOTAL_REFUNDED": "Total Refunded",
       "VIEW_ORDER_DETAILS": "View Order Details"
+    },
+    "SHIPPING_METHOD_EDIT": {
+      "ADD": "Add",
+      "ADD_NEW_COST": "Add New Cost",
+      "DETAILS": "Details",
+      "ORDER_TOTAL": "Order Total",
+      "SHIPPING_COST": "Shipping Cost",
+      "SHIPPING_COSTS": "Shipping Costs"
     },
     "STOREFRONTS": {
       "ACCESS_TOKEN_TOOLTIP": "Determines how long (in minutes) a user can stay logged in before they will need to re-enter their credentials and log back in. Minimum value is 10, Maximum value is 600.",

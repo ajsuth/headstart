@@ -32,6 +32,12 @@ export const SUMMARY_RESOURCE_INFO_PATHS_DICTIONARY: SummaryResourceInfoPathsDic
       toImage: PRODUCT_IMAGE_PATH_STRATEGY,
       toExpandable: false,
     },
+    shippingMethods: {
+      toPrimaryHeader: 'Name',
+      toSecondaryHeader: 'id',
+      toImage: '',
+      toExpandable: false,
+    },
     promotions: {
       toPrimaryHeader: 'Code',
       toSecondaryHeader: 'Description',
@@ -149,6 +155,29 @@ export const FULL_TABLE_RESOURCE_DICTIONARY: ResourceConfigurationDictionary = {
       },
     ],
     imgPath: PRODUCT_IMAGE_PATH_STRATEGY,
+  },
+  shippingMethods: {
+    fields: [
+      {
+        path: 'id',
+        header: 'ADMIN.HEADERS.ID',
+        type: BASIC_STRING,
+        sortable: true,
+      },
+      {
+        path: 'Name',
+        header: 'ADMIN.HEADERS.NAME',
+        type: BASIC_STRING,
+        sortable: true,
+      },
+      {
+        path: 'Active',
+        header: 'ADMIN.HEADERS.ACTIVE',
+        type: BASIC_STRING,
+        sortable: false,
+      },
+    ],
+    imgPath: '',
   },
   suppliers: {
     fields: [

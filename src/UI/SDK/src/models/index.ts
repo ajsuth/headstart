@@ -77,6 +77,8 @@ export * from './RMA';
 export * from './RMALineItem';
 export * from './RMALog';
 export * from './ShipEstimateXP';
+export * from './ShippingCost';
+export * from './ShippingMethod';
 export * from './ShipmentItem';
 export * from './ShipmentXp';
 export * from './ShipMethodSupplierView';

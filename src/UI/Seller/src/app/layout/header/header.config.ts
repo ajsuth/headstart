@@ -288,6 +288,13 @@ const MySupplerUsers = {
   route: '/my-supplier/users',
 }
 
+const Shipping = {
+  rolesWithAccess: [],
+  orderCloudUserTypesWithAccess: [SUPPLIER, SELLER],
+  title: 'Shipping Methods',
+  route: '/my-shipping-methods',
+}
+
 const Support = {
   rolesWithAccess: [],
   orderCloudUserTypesWithAccess: [SUPPLIER, SELLER],
@@ -308,6 +315,7 @@ const AllNavGroupings: HSRoute[] = [
   MySupplierProfile,
   MySupplierLocations,
   MySupplerUsers,
+  Shipping,
   Support,
 ]
 

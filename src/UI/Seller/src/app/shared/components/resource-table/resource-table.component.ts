@@ -61,6 +61,7 @@ export class ResourceTableComponent
   _currentResourceNamePlural: string
   _currentResourceNameSingular: string
   _ocService: ResourceCrudService<any>
+  _routerLink: string
   _filterConfig: any
   _errorMessage: string
   areChanges: boolean
@@ -304,8 +305,7 @@ export class ResourceTableComponent
 
   async determineViewingContext() {
     this.isMyResource = this.router.url.startsWith('/my-')
-    this.shouldDisplayList =
-      this.router.url.includes('locations') || this.router.url.includes('users')
+    this.shouldDisplayList =this._ocService.shouldDisplayList()
     const routeParams = this.activatedRoute.snapshot.params
     this.canImpersonateResource = routeParams.buyerID && routeParams.userID
     if (this.isMyResource) {
@@ -356,6 +356,7 @@ export class ResourceTableComponent
           if (parentResource)
             this.selectedParentResourceName = parentResource.Name
         }
+        this._routerLink = this.routerLink()
         if (params && parentResourceID) {
           const parentResource =
             await this.parentResourceService.findOrGetResourceByID(
@@ -407,6 +408,12 @@ export class ResourceTableComponent
       })
       this.filterForm = new FormGroup(formGroup)
     }
+  }
+
+  routerLink(): string {
+    return `/${ (this.isMyResource ?
+      this._ocService.myRoute :
+      this._ocService.route + '/' + this.selectedParentResourceID + '/' + this._ocService.secondaryResourceLevel) + '/new'}`
   }
 
   async impersonateUser(): Promise<void> {

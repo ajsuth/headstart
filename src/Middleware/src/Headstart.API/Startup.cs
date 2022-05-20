@@ -38,6 +38,7 @@ using OrderCloud.Integrations.Portal;
 using OrderCloud.Integrations.Reporting.Extensions;
 using OrderCloud.Integrations.RMAs.Extensions;
 using OrderCloud.Integrations.SendGrid.Extensions;
+using OrderCloud.Integrations.Shipping.Extensions;
 using OrderCloud.Integrations.Smarty.Extensions;
 using OrderCloud.Integrations.TaxJar.Extensions;
 using OrderCloud.Integrations.Vertex.Extensions;
@@ -112,6 +113,11 @@ namespace Headstart.API
                 new ContainerInfo()
                 {
                     Name = "shipmentdetail",
+                    PartitionKey = "/PartitionKey",
+                },
+                new ContainerInfo()
+                {
+                    Name = "shippingMethods",
                     PartitionKey = "/PartitionKey",
                 },
                 new ContainerInfo()
@@ -192,6 +198,7 @@ namespace Headstart.API
 
                 // Shipping Providers
                 .AddEasyPostShippingProvider(settings.EnvironmentSettings, settings.EasyPostSettings)
+                .AddCustomShippingProvider(settings.EnvironmentSettings)
                 .AddMockShippingProvider()
 
                 // Payment Providers

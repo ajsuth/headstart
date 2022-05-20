@@ -25,6 +25,8 @@ namespace Headstart.Common.Models
 
         public string ServiceName { get; set; }
 
+        public string Description { get; set; }
+
         public decimal ListRate { get; set; }
 
         public bool Guaranteed { get; set; }

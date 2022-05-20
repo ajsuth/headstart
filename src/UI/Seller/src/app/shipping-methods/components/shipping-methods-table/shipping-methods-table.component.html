@@ -1,0 +1,27 @@
+<resource-table-component
+  [resourceList]="resourceList"
+  [selectedResourceID]="selectedResourceID"
+  [updatedResource]="updatedResource"
+  [resourceInSelection]="resourceInSelection"
+  [ocService]="ocService"
+  [dataIsSaving]="dataIsSaving"
+  [resourceForm]="resourceForm"
+  [shouldShowCreateNew]="userContext?.UserType !== 'SELLER'"
+  (searched)="searchResources($event)"
+  (hitScrollEnd)="handleScrollEnd()"
+  (changesSaved)="saveUpdates()"
+  (changesDiscarded)="discardChanges()"
+  (resourceDelete)="deleteResource()"
+  (resourceSelected)="selectResource($event)"
+  [canBeDeleted]="true"
+  [labelSingular]="'ADMIN.NAV.SHIPPING_METHOD'"
+  [labelPlural]="'ADMIN.NAV.SHIPPING_METHODS'"
+>
+  <app-shipping-methods-edit
+    class="resource-edit"
+    [resourceInSelection]="resourceInSelection"
+    (updateResource)="updateResource($event)"
+    (updateList)="updateResourceInList($event)"
+  >
+  </app-shipping-methods-edit>
+</resource-table-component>

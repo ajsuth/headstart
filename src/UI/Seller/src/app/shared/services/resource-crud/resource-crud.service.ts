@@ -42,7 +42,7 @@ export abstract class ResourceCrudService<ResourceType> {
 
   constructor(
     protected router: Router,
-    private activatedRoute: ActivatedRoute,
+    protected activatedRoute: ActivatedRoute,
     public ocService: any,
     public currentUserService: CurrentUserService,
     route: string,
@@ -82,6 +82,10 @@ export abstract class ResourceCrudService<ResourceType> {
     if (this.primaryResourceLevel === 'suppliers') {
       return this.currentUserService.getMySupplier()
     }
+  }
+
+  public shouldDisplayList(): boolean {
+    return this.router.url.includes('locations') || this.router.url.includes('users')
   }
 
   async listResources(pageNumber = 1, searchText = ''): Promise<void> {

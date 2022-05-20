@@ -1,0 +1,135 @@
+<div *ngIf="!shippingCostsEditable" class="container-fluid mb-5">
+  not editable
+</div>
+<div *ngIf="shippingCostsEditable" class="container-fluid mb-5">
+  <div class="row pt-3">
+    <div class="col-md-7" *ngIf="shippingCostsEditable?.length > 0">
+      <table class="table">
+        <thead class="bg-light">
+          <tr>
+            <th translate>ADMIN.SHIPPING_METHOD_EDIT.ORDER_TOTAL</th>
+            <th translate>ADMIN.SHIPPING_METHOD_EDIT.SHIPPING_COST</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="
+              let shippingCost of shippingCostsEditable;
+              let i = index
+            "
+          >
+            <td>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">{{ currency?.Symbol }}</span>
+                </div>
+                <input
+                  [attr.disabled]="readonly ? true : null"
+                  type="number"
+                  class="form-control currency"
+                  [value]="shippingCost?.OrderTotal"
+                  min="1"
+                  step="0.01"
+                  (change)="updateExistingCost($event, i, 'OrderTotal')"
+                  placeholder="{{ 'ADMIN.SHIPPING_METHOD_EDIT.ORDER_TOTAL' | translate }} ({{
+                    currency?.Name
+                  }})"
+                /><span class="required-field" *ngIf="isRequired">&nbsp;*</span>
+              </div>
+            </td>
+            <td>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">{{ currency?.Symbol }}</span>
+                </div>
+                <input
+                  [attr.disabled]="readonly ? true : null"
+                  type="number"
+                  class="form-control currency"
+                  [value]="shippingCost?.Amount"
+                  min="1"
+                  step="0.01"
+                  (change)="updateExistingCost($event, i, 'Amount')"
+                  placeholder="{{ 'ADMIN.SHIPPING_METHOD_EDIT.SHIPPING_COST' | translate }} ({{
+                    currency?.Name
+                  }})"
+                /><span class="required-field" *ngIf="isRequired">&nbsp;*</span>
+              </div>
+            </td>
+            <td>
+              <fa-icon
+                *ngIf="i !== 0 && !readonly"
+                (click)="deleteShippingCost(shippingCost)"
+                class="icon-button ripple hover-btn"
+                [icon]="faTrash"
+              ></fa-icon>
+            </td>
+          </tr>
+          <tr *ngIf="isAddingShippingCost">
+            <td>
+              <div class="form-group">
+                <div class="input-group">
+                  <input
+                    [attr.disabled]="readonly ? true : null"
+                    type="number"
+                    class="form-control currency"
+                    min="2"
+                    [value]="newShippingCost.OrderTotal"
+                    (change)="updateNewCost($event, 'OrderTotal')"
+                    placeholder="{{
+                      'ADMIN.SHIPPING_METHOD_EDIT.ORDER_TOTAL' | translate
+                    }}"
+                  />
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="form-group">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">{{ currency?.Symbol }}</span>
+                  </div>
+                  <input
+                    [attr.disabled]="readonly ? true : null"
+                    type="number"
+                    class="form-control currency"
+                    min="1"
+                    step="0.01"
+                    [value]="newShippingCost.Amount"
+                    (change)="updateNewCost($event, 'Amount')"
+                    placeholder="{{
+                      'ADMIN.SHIPPING_METHOD_EDIT.SHIPPING_COST' | translate
+                    }} ({{ currency?.Name }})"
+                  />
+                </div>
+              </div>
+            </td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="addShippingCost()"
+                translate
+              >
+                ADMIN.SHIPPING_METHOD_EDIT.ADD
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!isAddingShippingCost && !readonly">
+            <td colspan="3">
+              <button
+                type="button"
+                class="w-100 btn btn-primary"
+                (click)="isAddingShippingCost = true"
+                translate
+              >
+                ADMIN.SHIPPING_METHOD_EDIT.ADD_NEW_COST
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -81,6 +81,11 @@ const routes: Routes = [
           import('./account/account.module').then((m) => m.AccountModule),
       },
       {
+        path: 'my-shipping-methods',
+        loadChildren: () =>
+          import('./shipping-methods/shipping-methods.module').then((m) => m.ShippingModule),
+      },
+      {
         path: 'support',
         loadChildren: () =>
           import('./support/support.module').then((m) => m.SupportModule),

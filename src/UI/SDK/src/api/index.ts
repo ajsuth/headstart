@@ -4,6 +4,7 @@ import Catalogs from './Catalogs';
 import Orders from './Orders';
 import Payments from './Payments';
 import Shipments from './Shipments';
+import ShippingMethods from './ShippingMethods';
 import Suppliers from './Suppliers';
 import Products from './Products';
 import BuyerLocations from './BuyerLocations';
@@ -34,6 +35,7 @@ const HeadStartSDK: HeadStartSDK = {
     Orders : new Orders(),
     Payments : new Payments(),
     Shipments : new Shipments(),
+    ShippingMethods : new ShippingMethods(),
     Suppliers : new Suppliers(),
     Products : new Products(),
     BuyerLocations : new BuyerLocations(),
@@ -61,6 +63,7 @@ interface HeadStartSDK {
     RmAs: RmAs,
     Payments : Payments,
     Shipments : Shipments,
+    ShippingMethods : ShippingMethods,
     Suppliers : Suppliers,
     Products : Products,
     BuyerLocations : BuyerLocations,

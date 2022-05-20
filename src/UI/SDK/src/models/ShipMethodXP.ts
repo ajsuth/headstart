@@ -3,6 +3,7 @@ export interface ShipMethodXP {
     Carrier?: string
     CarrierAccountID?: string
     ServiceName?: string
+    Description?: string
     ListRate?: number
     Guaranteed?: boolean
     OriginalCost?: number
