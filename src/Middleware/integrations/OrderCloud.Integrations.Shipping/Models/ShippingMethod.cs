@@ -23,5 +23,7 @@ namespace OrderCloud.Integrations.Shipping.Models
         public IList<ShippingCost> ShippingCosts { get; set; }
 
         public string Storefront { get; set; }
+
+        public IList<string> IncludedProductIDs { get; set; }
     }
 }

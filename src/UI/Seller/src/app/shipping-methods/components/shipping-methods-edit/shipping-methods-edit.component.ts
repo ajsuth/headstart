@@ -1,4 +1,11 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core'
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+} from '@angular/core'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { ShippingMethodsService } from '@app-seller/shipping-methods/shipping-methods.service'
 import {
@@ -10,15 +17,26 @@ import {
   SupportedCurrencies,
   SupportedRates,
 } from '@app-seller/models/currency-geography.types'
-import { ApiClient, ApiClients } from 'ordercloud-javascript-sdk'
+import { ListPage, Product } from '@ordercloud/angular-sdk'
+import { ListArgs } from '@ordercloud/headstart-sdk'
+import {
+  ApiClient,
+  ApiClients,
+  Meta,
+  Products,
+} from 'ordercloud-javascript-sdk'
 import {
   debounceTime,
   distinctUntilChanged,
   switchMap,
   map,
 } from 'rxjs/operators'
-import { from, Observable, OperatorFunction } from 'rxjs'
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
+import { BehaviorSubject, from, Observable, OperatorFunction } from 'rxjs'
+import {
+  faQuestionCircle,
+  faTimesCircle,
+} from '@fortawesome/free-solid-svg-icons'
+import { ToastrService } from 'ngx-toastr'
 
 @Component({
   selector: 'app-shipping-methods-edit',
@@ -27,10 +45,29 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
 })
 export class ShippingMethodEditComponent implements OnInit {
   faQuestionCircle = faQuestionCircle
+  faTimesCircle = faTimesCircle
   @Input()
   filterConfig
   @Input()
   set resourceInSelection(shippingMethod: ShippingMethod) {
+    if (shippingMethod.id) {
+      this.createShippingMethodForm(shippingMethod)
+      this.shippingMethod = JSON.parse(
+        JSON.stringify(shippingMethod)
+      ) as ShippingMethod
+      this.updateSelectedCurrency(shippingMethod.Currency)
+    } else {
+      this.createShippingMethodForm(this.shippingMethodsService.emptyResource)
+      this.shippingMethod = JSON.parse(
+        JSON.stringify(this.shippingMethodsService.emptyResource)
+      ) as ShippingMethod
+      this.updateSelectedCurrency(
+        this.shippingMethodsService.emptyResource.Currency
+      )
+    }
+  }
+  @Input()
+  set updatedResource(shippingMethod: ShippingMethod) {
     if (shippingMethod.id) {
       this.createShippingMethodForm(shippingMethod)
       this.shippingMethod = JSON.parse(
@@ -53,12 +90,19 @@ export class ShippingMethodEditComponent implements OnInit {
   updateList = new EventEmitter<ShippingMethod>()
   @Output()
   isCreatingNew: boolean
-  resourceForm: FormGroup
+  @Input() resourceForm: FormGroup
   shippingMethod: ShippingMethod
   availableCurrencies: SupportedRates[] = []
   selectedCurrency: SupportedRates
+  includedProductSearchTerm = ''
+  products = new BehaviorSubject<Product[]>([])
+  productMeta: Meta
 
-  constructor(public shippingMethodsService: ShippingMethodsService) {
+  constructor(
+    public shippingMethodsService: ShippingMethodsService,
+    private toastrService: ToastrService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.isCreatingNew = this.shippingMethodsService.checkIfCreatingNew()
   }
 
@@ -71,6 +115,7 @@ export class ShippingMethodEditComponent implements OnInit {
         SupportedCurrencies[c.Currency]
       )
     )
+    void this.listResources().then(() => this.cdr.detectChanges())
   }
 
   createShippingMethodForm(shippingMethod: ShippingMethod): void {
@@ -84,13 +129,8 @@ export class ShippingMethodEditComponent implements OnInit {
         shippingMethod.EstimatedTransitDays
       ),
       Storefront: new FormControl(shippingMethod.Storefront),
+      IncludedProductIDs: new FormControl(shippingMethod.IncludedProductIDs),
     })
-  }
-
-  updateSelectedCurrency(currencyCode: string): void {
-    this.selectedCurrency = this.availableCurrencies.filter(
-      (c) => c.Currency === currencyCode
-    )[0]
   }
 
   updateResourceFromEvent(event: Event, field: string): void {
@@ -111,10 +151,21 @@ export class ShippingMethodEditComponent implements OnInit {
     }
   }
 
+  /* Start: Currency control */
+  updateSelectedCurrency(currencyCode: string): void {
+    this.selectedCurrency = this.availableCurrencies.filter(
+      (c) => c.Currency === currencyCode
+    )[0]
+  }
+  /* End: Currency control */
+
+  /* Start: Shipping Costs control */
   updateShippingCosts(event: ShippingCost[]): void {
     this.updateResource.emit({ field: 'ShippingCosts', value: event })
   }
+  /* End: Shipping Costs control */
 
+  /* Start: Storefront control */
   searchApiClients: OperatorFunction<string, readonly ApiClient[]> = (
     text$: Observable<string>
   ): Observable<ApiClient[]> => {
@@ -146,4 +197,85 @@ export class ShippingMethodEditComponent implements OnInit {
     event.preventDefault() // default behavior saves entire buyer object to model, we just want to set the ID
     this.resourceForm.controls['Storefront'].setValue(event.item.ID)
   }
+  /* End: Storefront control */
+
+  /* Start: Included products control */
+  searchedProducts(searchText: string): void {
+    void this.listResources(1, searchText).then(() => this.cdr.detectChanges())
+    this.includedProductSearchTerm = searchText
+  }
+
+  async listResources(pageNumber = 1, searchText = ''): Promise<void> {
+    const options: ListArgs<any> = {
+      page: pageNumber,
+      search: searchText,
+      sortBy: ['Name'],
+      pageSize: 25,
+      filters: {},
+    }
+    const resourceResponse = await Products.List(options)
+    if (pageNumber === 1) {
+      this.setNewResources(resourceResponse)
+    } else {
+      this.addResources(resourceResponse)
+    }
+  }
+
+  setNewResources(resourceResponse: ListPage<Product>): void {
+    this.productMeta = resourceResponse?.Meta
+    this.products.next(resourceResponse?.Items)
+  }
+
+  addResources(resourceResponse: ListPage<Product>): void {
+    this.products.next([...this.products.value, ...resourceResponse?.Items])
+    this.productMeta = resourceResponse?.Meta
+  }
+
+  handleScrollEnd(event: any): void {
+    // This event check prevents the scroll-end event from firing when dropdown is closed
+    // It limits the action within the if block to only fire when you truly hit the scroll-end
+    if (event.target.classList.value.includes('active')) {
+      const totalPages = this.productMeta?.TotalPages
+      const nextPageNumber = this.productMeta?.Page + 1
+      if (totalPages >= nextPageNumber) {
+        void this.listResources(
+          nextPageNumber,
+          this.includedProductSearchTerm
+        ).then(() => this.cdr.detectChanges())
+      }
+    }
+    this.cdr.detectChanges()
+  }
+
+  addSKU(sku: string): void {
+    if (this.alreadySelected(sku)) {
+      this.toastrService.warning('You have already selected this product')
+    } else {
+      const newSKUs = [
+        ...this.resourceForm.controls['IncludedProductIDs'].value,
+        sku,
+      ]
+      this.updateResource.emit({
+        field: 'IncludedProductIDs',
+        value: newSKUs,
+        form: this.resourceForm,
+      })
+    }
+  }
+
+  removeSku(sku: string): void {
+    const modifiedSkus = this.resourceForm.controls[
+      'IncludedProductIDs'
+    ].value?.filter((s) => s !== sku)
+    this.updateResource.emit({
+      field: 'IncludedProductIDs',
+      value: modifiedSkus,
+      form: this.resourceForm,
+    })
+  }
+
+  alreadySelected(sku: string): boolean {
+    return this.shippingMethod.IncludedProductIDs?.includes(sku)
+  }
+  /* End: Included products control */
 }

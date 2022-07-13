@@ -75,6 +75,12 @@ namespace OrderCloud.Integrations.Shipping.Services
 
             foreach (var shippingMethod in shippingMethods)
             {
+                var hasIncludedProducts = HasAllIncludedProducts(shippingMethod, lineItems);
+                if (!hasIncludedProducts)
+                {
+                    continue;
+                }
+
                 var shippingCost = GetApplicableShippingCost(worksheet, shippingMethod, lineItems);
                 if (shippingCost != null)
                 {
@@ -107,6 +113,16 @@ namespace OrderCloud.Integrations.Shipping.Services
             };
 
             return shipEstimate;
+        }
+
+        protected bool HasAllIncludedProducts(ShippingMethod shippingMethod, List<HSLineItem> lineItems)
+        {
+            if (!shippingMethod.IncludedProductIDs.Any())
+            {
+                return true;
+            }
+
+            return shippingMethod.IncludedProductIDs.All(productID => lineItems.Any(li => li.ProductID == productID));
         }
 
         protected async Task<CosmosListPage<ShippingMethod>> GetShippingMethodsList(IQueryable<ShippingMethod> queryable, CosmosListOptions listOptions)

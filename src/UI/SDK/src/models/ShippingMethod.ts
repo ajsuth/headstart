@@ -11,4 +11,5 @@ export interface ShippingMethod {
     Tax?: TaxCategorization
     Storefront?: string
     ShippingCosts?: ShippingCost[]
+    IncludedProductIDs?: string[]
 }

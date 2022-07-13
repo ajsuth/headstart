@@ -610,6 +610,27 @@
       "TOTAL_REFUNDED": "Total remboursé",
       "VIEW_ORDER_DETAILS": "Afficher les détails de la commande"
     },
+    "SHIPPING_METHOD_EDIT": {
+      "ACTIVE": "Actif",
+      "ADD": "Ajouter",
+      "ADD_NEW_COST": "Ajouter un nouveau coût",
+      "CURRENCY": "Devise",
+      "DESCRIPTION": "La description",
+      "DETAILS": "Détails",
+      "ID": "IDENTIFIANT",
+      "INCLUDED_PRODUCTS": "Produits inclus",
+      "INCLUDED_PRODUCTS_TOOLTIP": "Produits qui doivent être présents dans un envoi pour que la méthode d'expédition soit applicable.",
+      "NAME": "Nom",
+      "NO_RESULTS": "Aucun résultat. Élargissez votre recherche et réessayez.",
+      "ORDER_TOTAL": "Total de la commande",
+      "SEARCHING": "recherche...",
+      "SHIPPING_COST": "Frais de port",
+      "SHIPPING_COSTS": "Les frais de livraison",
+      "STOREFRONT": "Vitrine",
+      "STOREFRONT_PLACEHOLDER": "Rechercher des vitrines...",
+      "STOREFRONT_TOOLTIP": "ID client API qui représente la vitrine.",
+      "TRANSIT_DAYS": "Jours de transit estimés"
+    },
     "STOREFRONTS": {
       "ACCESS_TOKEN_TOOLTIP": "Détermine combien de temps (en minutes) un utilisateur peut rester connecté avant d’avoir besoin de saisir à nouveau ses informations d’identification et de se reconnecter. La valeur minimale est 10, la valeur maximale est 600.",
       "ANON_BUYER_TOOLTIP": "Organisation d’acheteurs qui contient l’utilisateur qui doit être utilisé comme utilisateur de contexte par défaut pour les achats anonymes. Tous les prix, autorisations et visibilité seront basés sur cet utilisateur",

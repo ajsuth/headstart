@@ -1,13 +1,15 @@
 <div class="container-fluid">
   <form *ngIf="resourceForm" [formGroup]="resourceForm">
     <div class="form-group">
-      <span class="required-field">* required fields</span>
+      <span class="required-field">
+        * <span translate>ADMIN.COMMON.REQUIRED_FIELDS</span></span
+      >
       <div class="card bg-white shadow-sm p-4 mt-3">
-        <h6 class="font-weight-medium" translate>
+        <h4 class="font-weight-medium" translate>
           ADMIN.SHIPPING_METHOD_EDIT.DETAILS
-        </h6>
+        </h4>
         <div class="form-group">
-          <label for="id">ID <span class="required-field">*</span></label>
+          <label for="id" translate>ADMIN.SHIPPING_METHOD_EDIT.ID <span class="required-field">*</span></label>
           <input
             type="text"
             class="form-control"
@@ -20,7 +22,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="Name">Name <span class="required-field">*</span></label>
+          <label for="Name" translate>ADMIN.SHIPPING_METHOD_EDIT.NAME <span class="required-field">*</span></label>
           <input
             type="text"
             class="form-control"
@@ -33,7 +35,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="Description">Description</label>
+          <label for="Description" translate>ADMIN.SHIPPING_METHOD_EDIT.DESCRIPTION</label>
           <input
             type="text"
             class="form-control"
@@ -46,7 +48,7 @@
           />
         </div>
         <div class="form-group">
-          <p class="mb-1">Active</p>
+          <p class="mb-1" translate>ADMIN.SHIPPING_METHOD_EDIT.ACTIVE</p>
           <label class="switch mb-0" for="Active">
             <input
               type="checkbox"
@@ -62,7 +64,7 @@
           </label>
         </div>
         <div class="form-group">
-          <label for="EstimatedTransitDays">Estimated Transit Days</label>
+          <label for="EstimatedTransitDays" translate>ADMIN.SHIPPING_METHOD_EDIT.TRANSIT_DAYS</label>
           <input
             type="number"
             class="form-control"
@@ -74,7 +76,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="Currency">Currency <span class="required-field">*</span></label>
+          <label for="Currency" translate>ADMIN.SHIPPING_METHOD_EDIT.CURRENCY <span class="required-field">*</span></label>
           <select class="form-control" id="Currency" formControlName="Currency"
               (change)="updateResourceFromEvent($event, 'Currency')">
               <option *ngFor="let currency of availableCurrencies" [value]="currency.Currency">
@@ -83,7 +85,7 @@
             </select>
         </div>
         <div class="form-group">
-          <label for="Storefront">Storefront <span class="required-field">*</span>&nbsp;
+          <label for="Storefront" translate>ADMIN.SHIPPING_METHOD_EDIT.STOREFRONT <span class="required-field">*</span>&nbsp;
             <small>
               <fa-icon
                 [icon]="faQuestionCircle"
@@ -106,18 +108,18 @@
             [resultFormatter]="appName"
             (change)="updateResourceFromEvent($event, 'Storefront')"
             (selectItem)="selectApiClient($event)"
-            placeholder="Search Storefronts..."
+            placeholder="{{ 'ADMIN.SHIPPING_METHOD_EDIT.STOREFRONT' | translate }}"
             [editable]="false"
           />
           <small *ngIf="searching" class="form-text text-muted"
-            >searching...</small
+            >ADMIN.SHIPPING_METHOD_EDIT.SEARCHING</small
           >
         </div>
       </div>
       <div class="card bg-white shadow-sm p-4 mt-3">
-        <h6 class="font-weight-medium" translate>
+        <h4 class="font-weight-medium" translate>
           ADMIN.SHIPPING_METHOD_EDIT.SHIPPING_COSTS
-        </h6>
+        </h4>
         <shipping-cost-editor
           [shippingMethodForm]="resourceForm"
           [shippingMethod]="shippingMethod"
@@ -125,6 +127,80 @@
           (shippingCostsUpdated)="updateShippingCosts($event)"
         >
         </shipping-cost-editor>
+      </div>
+      <div class="card bg-white shadow-sm p-4 mt-3">
+        <h4 translate>ADMIN.SHIPPING_METHOD_EDIT.INCLUDED_PRODUCTS&nbsp;
+          <small>
+            <fa-icon
+              [icon]="faQuestionCircle"
+              ngbTooltip="{{
+                'ADMIN.SHIPPING_METHOD_EDIT.INCLUDED_PRODUCTS_TOOLTIP' | translate
+              }}"
+            ></fa-icon>
+          </small>
+        </h4>
+        <ng-container>
+          <div
+            id="includedProductsCollapse"
+            aria-label="parent resource dropdown"
+          >
+            <search-component
+              class="mr-3 w-100"
+              id="included-product-search"
+              [placeholderText]="''"
+              [searchTermInput]="includedProductSearchTerm"
+              (searched)="searchedProducts($event)"
+            >
+            </search-component>
+            <perfect-scrollbar
+              class="
+                dropdown-ps
+                product-search-area
+                border border-light
+                shadow-sm
+              "
+              (psYReachEnd)="handleScrollEnd($event)"
+            >
+              <button
+                type="button"
+                ngbDropdownItem
+                *ngFor="let resource of products | async"
+                (click)="addSKU(resource.ID)"
+                [disabled]="alreadySelected(resource.ID)"
+                aria-label="select your SKU"
+              >
+                <div class="overflow-hidden">
+                  <summary-resource-display-component
+                    [resource]="resource"
+                    [resourceType]="'products'"
+                  >
+                  </summary-resource-display-component>
+                </div>
+              </button>
+              <p
+                class="mb-0"
+                *ngIf="!products?.value?.length && includedProductSearchTerm"
+                ngbDropdownItem
+                disabled
+                translate
+              >
+                ADMIN.SHIPPING_METHOD_EDIT.NO_RESULTS
+              </p>
+            </perfect-scrollbar>
+          </div>
+          <div class="chip-bag">
+            <div
+              class="chip chip-sm"
+              *ngFor="let sku of shippingMethod.IncludedProductIDs"
+            >
+              {{ sku }}
+              <fa-icon
+                (click)="removeSku(sku)"
+                [icon]="faTimesCircle"
+              ></fa-icon>
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
   </form>

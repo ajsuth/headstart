@@ -20,6 +20,8 @@
   <app-shipping-methods-edit
     class="resource-edit"
     [resourceInSelection]="resourceInSelection"
+    [resourceForm]="resourceForm"
+    [updatedResource]="updatedResource"
     (updateResource)="updateResource($event)"
     (updateList)="updateResourceInList($event)"
   >

@@ -615,12 +615,25 @@
       "VIEW_ORDER_DETAILS": "View Order Details"
     },
     "SHIPPING_METHOD_EDIT": {
+      "ACTIVE": "Active",
       "ADD": "Add",
       "ADD_NEW_COST": "Add New Cost",
+      "CURRENCY": "Currency",
+      "DESCRIPTION": "Description",
       "DETAILS": "Details",
+      "ID": "ID",
+      "INCLUDED_PRODUCTS": "Included Products",
+      "INCLUDED_PRODUCTS_TOOLTIP": "Products that must be present in a shipment for the shipping method to be applicable.",
+      "NAME": "Name",
+      "NO_RESULTS": "No results. Broaden your search and try again.",
       "ORDER_TOTAL": "Order Total",
+      "SEARCHING": "searching...",
       "SHIPPING_COST": "Shipping Cost",
-      "SHIPPING_COSTS": "Shipping Costs"
+      "SHIPPING_COSTS": "Shipping Costs",
+      "STOREFRONT": "Storefront",
+      "STOREFRONT_PLACEHOLDER": "Search Storefronts...",
+      "STOREFRONT_TOOLTIP": "The API Client ID that represents the storefront.",
+      "TRANSIT_DAYS": "Estimated Transit Days"
     },
     "STOREFRONTS": {
       "ACCESS_TOKEN_TOOLTIP": "Determines how long (in minutes) a user can stay logged in before they will need to re-enter their credentials and log back in. Minimum value is 10, Maximum value is 600.",
