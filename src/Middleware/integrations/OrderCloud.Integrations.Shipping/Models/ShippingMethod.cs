@@ -21,5 +21,7 @@ namespace OrderCloud.Integrations.Shipping.Models
         public TaxCategorization Tax { get; set; }
 
         public IList<ShippingCost> ShippingCosts { get; set; }
+
+        public string Storefront { get; set; }
     }
 }

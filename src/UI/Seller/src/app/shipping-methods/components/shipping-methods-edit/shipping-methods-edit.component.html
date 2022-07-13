@@ -7,7 +7,7 @@
           ADMIN.SHIPPING_METHOD_EDIT.DETAILS
         </h6>
         <div class="form-group">
-          <label for="id">ID<span class="required-field">*</span></label>
+          <label for="id">ID <span class="required-field">*</span></label>
           <input
             type="text"
             class="form-control"
@@ -20,7 +20,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="Name">Name<span class="required-field">*</span></label>
+          <label for="Name">Name <span class="required-field">*</span></label>
           <input
             type="text"
             class="form-control"
@@ -74,13 +74,44 @@
           />
         </div>
         <div class="form-group">
-          <label for="Currency">Currency<span class="required-field">*</span></label>
+          <label for="Currency">Currency <span class="required-field">*</span></label>
           <select class="form-control" id="Currency" formControlName="Currency"
               (change)="updateResourceFromEvent($event, 'Currency')">
               <option *ngFor="let currency of availableCurrencies" [value]="currency.Currency">
                 <img [src]="currency.Icon" /> {{ currency.Name }}
               </option>
             </select>
+        </div>
+        <div class="form-group">
+          <label for="Storefront">Storefront <span class="required-field">*</span>&nbsp;
+            <small>
+              <fa-icon
+                [icon]="faQuestionCircle"
+                ngbTooltip="{{
+                  'ADMIN.SHIPPING_METHOD_EDIT.STOREFRONT_TOOLTIP' | translate
+                }}"
+              ></fa-icon>
+            </small>
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="Storefront"
+            maxlength="100"
+            showErrors
+            aria-describedby="Storefront"
+            formControlName="Storefront"
+            [ngbTypeahead]="searchApiClients"
+            [inputFormatter]="appName"
+            [resultFormatter]="appName"
+            (change)="updateResourceFromEvent($event, 'Storefront')"
+            (selectItem)="selectApiClient($event)"
+            placeholder="Search Storefronts..."
+            [editable]="false"
+          />
+          <small *ngIf="searching" class="form-text text-muted"
+            >searching...</small
+          >
         </div>
       </div>
       <div class="card bg-white shadow-sm p-4 mt-3">

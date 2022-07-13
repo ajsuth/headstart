@@ -1,11 +1,4 @@
-import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  OnInit,
-  OnDestroy,
-} from '@angular/core'
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { ShippingMethodsService } from '@app-seller/shipping-methods/shipping-methods.service'
 import {
@@ -17,6 +10,15 @@ import {
   SupportedCurrencies,
   SupportedRates,
 } from '@app-seller/models/currency-geography.types'
+import { ApiClient, ApiClients } from 'ordercloud-javascript-sdk'
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  map,
+} from 'rxjs/operators'
+import { from, Observable, OperatorFunction } from 'rxjs'
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
 
 @Component({
   selector: 'app-shipping-methods-edit',
@@ -24,6 +26,7 @@ import {
   styleUrls: ['./shipping-methods-edit.component.scss'],
 })
 export class ShippingMethodEditComponent implements OnInit {
+  faQuestionCircle = faQuestionCircle
   @Input()
   filterConfig
   @Input()
@@ -80,6 +83,7 @@ export class ShippingMethodEditComponent implements OnInit {
       EstimatedTransitDays: new FormControl(
         shippingMethod.EstimatedTransitDays
       ),
+      Storefront: new FormControl(shippingMethod.Storefront),
     })
   }
 
@@ -109,5 +113,37 @@ export class ShippingMethodEditComponent implements OnInit {
 
   updateShippingCosts(event: ShippingCost[]): void {
     this.updateResource.emit({ field: 'ShippingCosts', value: event })
+  }
+
+  searchApiClients: OperatorFunction<string, readonly ApiClient[]> = (
+    text$: Observable<string>
+  ): Observable<ApiClient[]> => {
+    return text$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((term) => {
+        return from(ApiClients.List({ search: term, pageSize: 10 })).pipe(
+          map((listResponse) => {
+            return listResponse.Items.filter((client) => client.xp.IsStorefront)
+          })
+        )
+      })
+    )
+  }
+
+  appName = (apiClient: ApiClient): string => {
+    if (typeof apiClient === 'string') {
+      return apiClient
+    } else {
+      return apiClient.AppName
+    }
+  }
+
+  selectApiClient(event: {
+    item: ApiClient
+    preventDefault: () => void
+  }): void {
+    event.preventDefault() // default behavior saves entire buyer object to model, we just want to set the ID
+    this.resourceForm.controls['Storefront'].setValue(event.item.ID)
   }
 }
