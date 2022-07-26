@@ -184,6 +184,7 @@ export class ResourceTableComponent
     this.initializeSubscriptions()
     this.subscribeToOptions()
     this.screenSize = getScreenSizeBreakPoint()
+    this._routerLink = this.routerLink()
   }
 
   mapProductTypes(types: string[]): Params[] {
