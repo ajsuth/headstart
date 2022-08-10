@@ -11,7 +11,7 @@ import { CosmosListPage } from '@ordercloud/headstart-sdk/dist/models/CosmosList
 import { AppConfig, Options } from '@app-seller/shared'
 import { applicationConfiguration } from '@app-seller/config/app.config'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { OcTokenService } from '@ordercloud/angular-sdk'
+import { Tokens } from 'ordercloud-javascript-sdk'
 
 export const SHIPPING_METHODS_SUB_RESOURCE_LIST = []
 
@@ -24,7 +24,6 @@ export class ShippingMethodsService extends ResourceCrudService<ShippingMethod> 
     activatedRoute: ActivatedRoute,
     currentUserService: CurrentUserService,
     private http: HttpClient,
-    private ocTokenService: OcTokenService,
     @Inject(applicationConfiguration) private appConfig: AppConfig
   ) {
     super(
@@ -55,7 +54,7 @@ export class ShippingMethodsService extends ResourceCrudService<ShippingMethod> 
   private buildHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.ocTokenService.GetAccess()}`,
+      Authorization: `Bearer ${Tokens.GetAccessToken()}`,
     })
   }
 

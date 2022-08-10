@@ -17,7 +17,7 @@ import {
   SupportedCurrencies,
   SupportedRates,
 } from '@app-seller/models/currency-geography.types'
-import { ListPage, Product } from '@ordercloud/angular-sdk'
+import { ListPage, Product } from 'ordercloud-javascript-sdk'
 import { ListArgs } from '@ordercloud/headstart-sdk'
 import {
   ApiClient,
