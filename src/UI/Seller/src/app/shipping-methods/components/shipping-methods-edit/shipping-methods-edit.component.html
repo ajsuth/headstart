@@ -202,6 +202,80 @@
           </div>
         </ng-container>
       </div>
+      <div class="card bg-white shadow-sm p-4 mt-3">
+        <h4 translate>ADMIN.SHIPPING_METHOD_EDIT.EXCLUDED_PRODUCTS&nbsp;
+          <small>
+            <fa-icon
+              [icon]="faQuestionCircle"
+              ngbTooltip="{{
+                'ADMIN.SHIPPING_METHOD_EDIT.EXCLUDED_PRODUCTS_TOOLTIP' | translate
+              }}"
+            ></fa-icon>
+          </small>
+        </h4>
+        <ng-container>
+          <div
+            id="excludedProductsCollapse"
+            aria-label="parent resource dropdown"
+          >
+            <search-component
+              class="mr-3 w-100"
+              id="excluded-product-search"
+              [placeholderText]="''"
+              [searchTermInput]="excludedProductSearchTerm"
+              (searched)="searchedExcludedProducts($event)"
+            >
+            </search-component>
+            <perfect-scrollbar
+              class="
+                dropdown-ps
+                product-search-area
+                border border-light
+                shadow-sm
+              "
+              (psYReachEnd)="handleExcludedScrollEnd($event)"
+            >
+              <button
+                type="button"
+                ngbDropdownItem
+                *ngFor="let resource of excludedProducts | async"
+                (click)="addExcludedSKU(resource.ID)"
+                [disabled]="excludedAlreadySelected(resource.ID)"
+                aria-label="select your SKU"
+              >
+                <div class="overflow-hidden">
+                  <summary-resource-display-component
+                    [resource]="resource"
+                    [resourceType]="'products'"
+                  >
+                  </summary-resource-display-component>
+                </div>
+              </button>
+              <p
+                class="mb-0"
+                *ngIf="!excludedProducts?.value?.length && excludedProductSearchTerm"
+                ngbDropdownItem
+                disabled
+                translate
+              >
+                ADMIN.SHIPPING_METHOD_EDIT.NO_RESULTS
+              </p>
+            </perfect-scrollbar>
+          </div>
+          <div class="chip-bag">
+            <div
+              class="chip chip-sm"
+              *ngFor="let sku of shippingMethod.ExcludedProductIDs"
+            >
+              {{ sku }}
+              <fa-icon
+                (click)="removeExcludedSku(sku)"
+                [icon]="faTimesCircle"
+              ></fa-icon>
+            </div>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </form>
 </div>

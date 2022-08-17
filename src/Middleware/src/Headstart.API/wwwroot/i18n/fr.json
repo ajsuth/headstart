@@ -617,6 +617,8 @@
       "CURRENCY": "Devise",
       "DESCRIPTION": "La description",
       "DETAILS": "Détails",
+      "EXCLUDED_PRODUCTS": "Produits exclus",
+      "EXCLUDED_PRODUCTS_TOOLTIP": "Produits qui disqualifient un envoi de cette méthode d'expédition.",
       "ID": "IDENTIFIANT",
       "INCLUDED_PRODUCTS": "Produits inclus",
       "INCLUDED_PRODUCTS_TOOLTIP": "Produits qui doivent être présents dans un envoi pour que la méthode d'expédition soit applicable.",

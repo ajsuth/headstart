@@ -25,5 +25,7 @@ namespace OrderCloud.Integrations.Shipping.Models
         public string Storefront { get; set; }
 
         public IList<string> IncludedProductIDs { get; set; }
+
+        public IList<string> ExcludedProductIDs { get; set; }
     }
 }

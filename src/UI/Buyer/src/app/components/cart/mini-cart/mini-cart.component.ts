@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, OnInit } from '@angular/core'
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import { HSOrder, HSLineItem } from '@ordercloud/headstart-sdk'
 import { ShopperContextService } from 'src/app/services/shopper-context/shopper-context.service'
+import { getPrimaryLineItemImage } from 'src/app/services/images.helpers'
 
 @Component({
   templateUrl: './mini-cart.component.html',
@@ -27,9 +28,7 @@ export class OCMMiniCart implements OnInit {
     this.navigate.emit()
   }
 
-  toProductDetails(
-    productID: string,
-  ): void {
+  toProductDetails(productID: string): void {
     this.context.router.toProductDetails(productID)
     this.navigate.emit()
   }
@@ -41,5 +40,13 @@ export class OCMMiniCart implements OnInit {
 
   isQuoteOrder(): boolean {
     return this.order?.xp?.OrderType === 'Quote'
+  }
+
+  getImageUrl(lineItemID: string): string {
+    return getPrimaryLineItemImage(
+      lineItemID,
+      this.lineItems,
+      this.context.currentUser.get()
+    )
   }
 }

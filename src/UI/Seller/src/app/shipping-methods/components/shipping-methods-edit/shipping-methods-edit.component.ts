@@ -17,12 +17,13 @@ import {
   SupportedCurrencies,
   SupportedRates,
 } from '@app-seller/models/currency-geography.types'
-import { ListPage, Product } from 'ordercloud-javascript-sdk'
 import { ListArgs } from '@ordercloud/headstart-sdk'
 import {
   ApiClient,
   ApiClients,
+  ListPage,
   Meta,
+  Product,
   Products,
 } from 'ordercloud-javascript-sdk'
 import {
@@ -97,6 +98,9 @@ export class ShippingMethodEditComponent implements OnInit {
   includedProductSearchTerm = ''
   products = new BehaviorSubject<Product[]>([])
   productMeta: Meta
+  excludedProductSearchTerm = ''
+  excludedProducts = new BehaviorSubject<Product[]>([])
+  excludedProductMeta: Meta
 
   constructor(
     public shippingMethodsService: ShippingMethodsService,
@@ -116,6 +120,7 @@ export class ShippingMethodEditComponent implements OnInit {
       )
     )
     void this.listResources().then(() => this.cdr.detectChanges())
+    void this.listExcludedResources().then(() => this.cdr.detectChanges())
   }
 
   createShippingMethodForm(shippingMethod: ShippingMethod): void {
@@ -130,6 +135,7 @@ export class ShippingMethodEditComponent implements OnInit {
       ),
       Storefront: new FormControl(shippingMethod.Storefront),
       IncludedProductIDs: new FormControl(shippingMethod.IncludedProductIDs),
+      ExcludedProductIDs: new FormControl(shippingMethod.ExcludedProductIDs),
     })
   }
 
@@ -278,4 +284,87 @@ export class ShippingMethodEditComponent implements OnInit {
     return this.shippingMethod.IncludedProductIDs?.includes(sku)
   }
   /* End: Included products control */
+
+  /* Start: Excluded products control */
+  searchedExcludedProducts(searchText: string): void {
+    void this.listExcludedResources(1, searchText).then(() => this.cdr.detectChanges())
+    this.excludedProductSearchTerm = searchText
+  }
+
+  async listExcludedResources(pageNumber = 1, searchText = ''): Promise<void> {
+    const options: ListArgs<any> = {
+      page: pageNumber,
+      search: searchText,
+      sortBy: ['Name'],
+      pageSize: 25,
+      filters: {},
+    }
+    const resourceResponse = await Products.List(options)
+    if (pageNumber === 1) {
+      this.setNewExcludedResources(resourceResponse)
+    } else {
+      this.addExcludedResources(resourceResponse)
+    }
+  }
+
+  setNewExcludedResources(resourceResponse: ListPage<Product>): void {
+    this.excludedProductMeta = resourceResponse?.Meta
+    this.excludedProducts.next(resourceResponse?.Items)
+  }
+
+  addExcludedResources(resourceResponse: ListPage<Product>): void {
+    this.excludedProducts.next([
+      ...this.excludedProducts.value,
+      ...resourceResponse?.Items,
+    ])
+    this.excludedProductMeta = resourceResponse?.Meta
+  }
+
+  handleExcludedScrollEnd(event: any): void {
+    // This event check prevents the scroll-end event from firing when dropdown is closed
+    // It limits the action within the if block to only fire when you truly hit the scroll-end
+    if (event.target.classList.value.includes('active')) {
+      const totalPages = this.excludedProductMeta?.TotalPages
+      const nextPageNumber = this.excludedProductMeta?.Page + 1
+      if (totalPages >= nextPageNumber) {
+        void this.listExcludedResources(
+          nextPageNumber,
+          this.excludedProductSearchTerm
+        ).then(() => this.cdr.detectChanges())
+      }
+    }
+    this.cdr.detectChanges()
+  }
+
+  addExcludedSKU(sku: string): void {
+    if (this.excludedAlreadySelected(sku)) {
+      this.toastrService.warning('You have already selected this product')
+    } else {
+      const newSKUs = [
+        ...this.resourceForm.controls['ExcludedProductIDs'].value,
+        sku,
+      ]
+      this.updateResource.emit({
+        field: 'ExcludedProductIDs',
+        value: newSKUs,
+        form: this.resourceForm,
+      })
+    }
+  }
+
+  removeExcludedSku(sku: string): void {
+    const modifiedSkus = this.resourceForm.controls[
+      'ExcludedProductIDs'
+    ].value?.filter((s) => s !== sku)
+    this.updateResource.emit({
+      field: 'ExcludedProductIDs',
+      value: modifiedSkus,
+      form: this.resourceForm,
+    })
+  }
+
+  excludedAlreadySelected(sku: string): boolean {
+    return this.shippingMethod.ExcludedProductIDs?.includes(sku)
+  }
+  /* End: Excluded products control */
 }

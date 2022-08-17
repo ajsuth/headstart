@@ -29,6 +29,8 @@ shared-address-display {
   flex: none;
 }
 .mini-cart-popover {
+  // class is on angular component, which isn't picking up component styling?
+  max-width: 480px;
   .popover-body {
     padding: 0;
   }

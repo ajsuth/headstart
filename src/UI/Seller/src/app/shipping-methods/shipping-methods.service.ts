@@ -49,6 +49,7 @@ export class ShippingMethodsService extends ResourceCrudService<ShippingMethod> 
     Currency: null,
     ShippingCosts: [],
     IncludedProductIDs: [],
+    ExcludedProductIDs: [],
   }
 
   private buildHeaders(): HttpHeaders {

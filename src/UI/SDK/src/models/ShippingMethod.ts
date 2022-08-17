@@ -12,4 +12,5 @@ export interface ShippingMethod {
     Storefront?: string
     ShippingCosts?: ShippingCost[]
     IncludedProductIDs?: string[]
+    ExcludedProductIDs?: string[]
 }

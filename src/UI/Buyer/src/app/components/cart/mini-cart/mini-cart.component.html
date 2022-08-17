@@ -7,18 +7,29 @@
       class="list-group-item"
       *ngFor="let li of lineItems | slice: 0:maxLines"
     >
-      <a href="javascript:;" (click)="toProductDetails(li.Product.ID)">{{
-        li | productNameWithSpecs
-      }}</a>
-      <div class="d-flex justify-content-between">
-        <small
-          ><span class="text-muted" translate>CART.MINI_CART.QTY</span>:
-          {{ li.Quantity | number }}</small
-        >
-        <small
-          ><span class="text-muted" translate>CART.MINI_CART.UNIT_PRICE</span>:
-          {{ li.UnitPrice || 0 | currency: _orderCurrency }}</small
-        >
+      <div class="row">
+        <div class="col-md-3 col-sm-6 pr-md-3">
+          <img
+            class="img-thumbnail w-100"
+            [src]="li.xp?.ImageUrl || getImageUrl(li.ID)"
+            alt="{{ li.Product.ID }}"
+          />
+        </div>
+        <div class="col-md-9 col-sm-6">
+          <a href="javascript:;" (click)="toProductDetails(li.Product.ID)">{{
+            li | productNameWithSpecs
+          }}</a>
+          <div class="d-flex justify-content-between">
+            <small
+              ><span class="text-muted" translate>CART.MINI_CART.QTY</span>:
+              {{ li.Quantity | number }}</small
+            >
+            <small
+              ><span class="text-muted" translate>CART.MINI_CART.UNIT_PRICE</span>:
+              {{ li.UnitPrice || 0 | currency: _orderCurrency }}</small
+            >
+          </div>
+        </div>
       </div>
     </div>
     <h4 *ngIf="lineItems.length > maxLines" class="list-group-item text-center">

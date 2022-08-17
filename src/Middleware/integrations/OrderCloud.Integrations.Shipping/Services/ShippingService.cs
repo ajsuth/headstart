@@ -39,10 +39,7 @@ namespace OrderCloud.Integrations.Shipping.Services
             // Group supplier products into supplier shipments
             var shipments = worksheet.LineItems.GroupBy(li => new AddressPair { ShipFrom = li.ShipFromAddress, ShipTo = li.ShippingAddress }).ToList();
 
-            // Separate digital items from physical products into individual shipments
-            // TODO: Currently not supported in the buyer app
-
-            // Group shipment types, e.g. click and collect vs delivery
+            // Group shipment types, e.g. delivery, click and collect, electronic delivery, account entitlements, etc.
             // TODO: Currently not supported in the buyer app
 
             return shipments;
@@ -65,39 +62,7 @@ namespace OrderCloud.Integrations.Shipping.Services
 
         public HSShipEstimate CreateShipEstimateForShipment(HSOrderWorksheet worksheet, List<HSLineItem> lineItems, List<ShippingMethod> shippingMethods, int index)
         {
-            var shipMethods = new List<HSShipMethod>();
-
-            // If all line items in the list have FreeShipping, then Mock rates
-            if (lineItems.All(li => li.Product?.xp?.FreeShipping == true))
-            {
-                shipMethods.Add(CreateFreeShippingMethod(lineItems));
-            }
-
-            foreach (var shippingMethod in shippingMethods)
-            {
-                var hasIncludedProducts = HasAllIncludedProducts(shippingMethod, lineItems);
-                if (!hasIncludedProducts)
-                {
-                    continue;
-                }
-
-                var shippingCost = GetApplicableShippingCost(worksheet, shippingMethod, lineItems);
-                if (shippingCost != null)
-                {
-                    shipMethods.Add(new HSShipMethod
-                    {
-                        ID = shippingMethod.id,
-                        Name = shippingMethod.Name,
-                        Cost = (decimal)shippingCost,
-                        EstimatedTransitDays = shippingMethod.EstimatedTransitDays ?? 0,
-                        xp = new ShipMethodXP
-                        {
-                            FreeShippingApplied = false,
-                            Description = shippingMethod.Description
-                        }
-                    });
-                };
-            }
+            var shipMethods = FilterShippingMethods(worksheet, lineItems, shippingMethods);
 
             var firstLi = lineItems.First();
             var shipEstimate = new HSShipEstimate
@@ -115,6 +80,55 @@ namespace OrderCloud.Integrations.Shipping.Services
             return shipEstimate;
         }
 
+        protected List<HSShipMethod> FilterShippingMethods(HSOrderWorksheet worksheet, List<HSLineItem> lineItems, List<ShippingMethod> shippingMethods)
+        {
+            var shipMethods = new List<HSShipMethod>();
+
+            // If all line items in the list have FreeShipping, then Mock rates
+            if (lineItems.All(li => li.Product?.xp?.FreeShipping == true))
+            {
+                shipMethods.Add(CreateFreeShippingMethod(lineItems));
+            }
+
+            foreach (var shippingMethod in shippingMethods)
+            {
+                // Start: Filter out if shipment does not qualify
+                var hasIncludedProducts = HasAllIncludedProducts(shippingMethod, lineItems);
+                if (!hasIncludedProducts)
+                {
+                    continue;
+                }
+
+                var hasExcludedProducts = HasExcludedProducts(shippingMethod, lineItems);
+                if (hasExcludedProducts)
+                {
+                    continue;
+                }
+                // End: Filter out if shipment does not qualify
+
+                // Evaluate Shipping Cost
+                var shippingCost = EvaluateShippingCost(worksheet, shippingMethod, lineItems);
+                if (shippingCost != null)
+                {
+                    // Construct ship method
+                    shipMethods.Add(new HSShipMethod
+                    {
+                        ID = shippingMethod.id,
+                        Name = shippingMethod.Name,
+                        Cost = (decimal)shippingCost,
+                        EstimatedTransitDays = shippingMethod.EstimatedTransitDays ?? 0,
+                        xp = new ShipMethodXP
+                        {
+                            FreeShippingApplied = false,
+                            Description = shippingMethod.Description
+                        }
+                    });
+                };
+            }
+
+            return shipMethods;
+        }
+
         protected bool HasAllIncludedProducts(ShippingMethod shippingMethod, List<HSLineItem> lineItems)
         {
             if (!shippingMethod.IncludedProductIDs.Any())
@@ -123,6 +137,16 @@ namespace OrderCloud.Integrations.Shipping.Services
             }
 
             return shippingMethod.IncludedProductIDs.All(productID => lineItems.Any(li => li.ProductID == productID));
+        }
+
+        protected bool HasExcludedProducts(ShippingMethod shippingMethod, List<HSLineItem> lineItems)
+        {
+            if (!shippingMethod.ExcludedProductIDs.Any())
+            {
+                return false;
+            }
+
+            return shippingMethod.ExcludedProductIDs.Any(productID => lineItems.Any(li => li.ProductID == productID));
         }
 
         protected async Task<CosmosListPage<ShippingMethod>> GetShippingMethodsList(IQueryable<ShippingMethod> queryable, CosmosListOptions listOptions)
@@ -150,7 +174,7 @@ namespace OrderCloud.Integrations.Shipping.Services
             };
         }
 
-        protected decimal? GetApplicableShippingCost(HSOrderWorksheet worksheet, ShippingMethod shippingMethod, List<HSLineItem> lineItems)
+        protected decimal? EvaluateShippingCost(HSOrderWorksheet worksheet, ShippingMethod shippingMethod, List<HSLineItem> lineItems)
         {
             var total = 0m;
             foreach (var lineItem in lineItems)

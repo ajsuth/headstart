@@ -44,11 +44,14 @@ namespace OrderCloud.Integrations.Shipping.Commands
 
             try
             {
+                // 1. Determine order shipments
                 var shipments = shippingService.CreateShipmentsFromWorksheet(worksheet, config);
+                // 2. Get order level applicable shipping methods
                 var shippingMethods = await shippingService.GetApplicableShippingMethods(worksheet.Order.xp.Currency?.ToString(), config);
-                var shipEstimates = shipments.Select((shipment, index) =>
+                // 3. Determine applicable shipping methods for each shipment
+                var shipEstimates = shipments.Select((lineItems, index) =>
                 {
-                    return shippingService.CreateShipEstimateForShipment(worksheet, shipment.ToList(), shippingMethods, index);
+                    return shippingService.CreateShipEstimateForShipment(worksheet, lineItems.ToList(), shippingMethods, index);
                 });
 
                 shipEstimateResponse.ShipEstimates = shipEstimates.ToList();

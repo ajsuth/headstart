@@ -621,6 +621,8 @@
       "CURRENCY": "Currency",
       "DESCRIPTION": "Description",
       "DETAILS": "Details",
+      "EXCLUDED_PRODUCTS": "Excluded Products",
+      "EXCLUDED_PRODUCTS_TOOLTIP": "Products that disqualify a shipment from this shipping method.",
       "ID": "ID",
       "INCLUDED_PRODUCTS": "Included Products",
       "INCLUDED_PRODUCTS_TOOLTIP": "Products that must be present in a shipment for the shipping method to be applicable.",
